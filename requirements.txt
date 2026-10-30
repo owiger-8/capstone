@@ -1,0 +1,13 @@
+# Raspberry Pi 5 edge simulation requirements
+# Target device: Raspberry Pi 5 (Arm Cortex-A76, 2GB RAM)
+# Install system deps first on the Pi:
+#   sudo apt update && sudo apt install -y python3-pip python3-numpy python3-tk
+# Then: pip3 install -r requirements.txt
+
+numpy
+pandas
+psutil
+matplotlib
+onnxruntime
+hnswlib
+scikit-learn
