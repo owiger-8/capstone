@@ -89,7 +89,7 @@ def train_model(model, X_tr, y_tr, epochs=5):
     model.to(device)
     opt = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
     loss_fn = nn.MSELoss()
-    dl = DataLoader(TensorDataset(torch.from_numpy(X_tr), torch.from_numpy(y_tr)), batch_size=64, shuffle=False)
+    dl = DataLoader(TensorDataset(torch.from_numpy(X_tr), torch.from_numpy(y_tr)), batch_size=64, shuffle=True)
     model.train()
     for epoch in range(epochs):
         for xb, yb in dl:
@@ -99,6 +99,7 @@ def train_model(model, X_tr, y_tr, epochs=5):
             loss = loss_fn(pred, yb.squeeze(-1))
             loss.backward()
             opt.step()
+        print(f"    Epoch {epoch+1}/{epochs} done", flush=True)
     model.eval()
     return model
 
@@ -131,27 +132,27 @@ def main():
     split = int(args.train_split * len(X_all))
     X_tr = X_all[:split]
     y_tr = y_all[:split]
-    X_tr_small = X_tr[:50000]  # Use first 50k of training data
-    y_tr_small = y_tr[:50000]
-    print(f"Training on first {len(X_tr_small)} samples (fast mode), testing streaming from index {args.start}")
+    X_tr_small = X_tr[:200000]  # Use more training data
+    y_tr_small = y_tr[:200000]
+    print(f"Training on first {len(X_tr_small)} samples, testing streaming from index {args.start}")
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Train static models on early data only (frozen)
     print("Training CNN-GRU (Hasanat) on early data...")
-    cnn_gru_static = train_model(CNN_GRU_Hasanat(), X_tr_small, y_tr_small, epochs=2)
+    cnn_gru_static = train_model(CNN_GRU_Hasanat(), X_tr_small, y_tr_small, epochs=5)
     
     print("Training CNN-BiGRU+Att (Ullah) on early data...")
-    cnn_bigru_static = train_model(CNN_BiGRU_Attention(), X_tr_small, y_tr_small, epochs=2)
+    cnn_bigru_static = train_model(CNN_BiGRU_Attention(), X_tr_small, y_tr_small, epochs=5)
     
     print("Training LSTM (baseline) on early data...")
-    lstm_static = train_model(LSTMModel(), X_tr_small, y_tr_small, epochs=2)
+    lstm_static = train_model(LSTMModel(), X_tr_small, y_tr_small, epochs=5)
     
     print("Training BiLSTM (Bohara) on early data...")
-    bilstm_static = train_model(BiLSTMModel(), X_tr_small, y_tr_small, epochs=2)
+    bilstm_static = train_model(BiLSTMModel(), X_tr_small, y_tr_small, epochs=5)
     
     print("Training ELM (Yang) on early data...")
-    elm_static = train_model(ELM(), X_tr_small, y_tr_small, epochs=2)
+    elm_static = train_model(ELM(), X_tr_small, y_tr_small, epochs=5)
     
     # Streaming evaluation
     def stream_eval_static(model):
@@ -161,11 +162,12 @@ def main():
             for i in range(args.start, args.start + args.n):
                 if i < SEQ_LEN:
                     continue
+                # Get window
                 window = scaled[i - SEQ_LEN:i].reshape(1, SEQ_LEN, 1)
                 x = torch.from_numpy(window).float().to(device)
-                pred = model(x).cpu().numpy()[0]
-                pred_inv = pred * (mx - mn) + mn
-                preds.append(pred_inv)
+                pred_scaled = model(x).cpu().numpy()[0]
+                pred_inv = pred_scaled * (mx - mn) + mn
+                preds.append(float(pred_inv))
                 trues.append(float(series[i]))
         return np.array(preds), np.array(trues)
     
@@ -197,7 +199,7 @@ def main():
         window = series[i - SEQ_LEN:i]
         y_curr = series[i]
         pred, _ = ep.predict(window, y_curr=y_curr)
-        preds_e.append(pred)
+        preds_e.append(float(pred))
         trues_e.append(float(y_curr))
     
     results["EcoEdge_streaming (ours)"] = {
