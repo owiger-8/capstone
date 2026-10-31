@@ -9,5 +9,4 @@
 ## Testing / Evaluation
 - MAE: 100.4075
 - RMSE: 153.2663
-- MAPE: 560587.00%
 - R2: 0.7516
