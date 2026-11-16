@@ -1,3 +1,6 @@
 EcoEdge_Literature_Survey.pdf
 household_data_1min_singleindex.csv
 input/*.csv
+firebase-debug.log
+.gitignore
+Real-Time Edge Forecasting - CNN-GRU Capstone.pdf
