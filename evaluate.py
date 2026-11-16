@@ -16,6 +16,7 @@ def main():
     df = pd.read_csv(args.csv, usecols=[args.target])
     df[args.target] = df[args.target].ffill().bfill()
     series = np.nan_to_num(df[args.target].values.astype(np.float32), nan=0.0)
+    series = np.diff(series, prepend=series[0])
 
     ep = EdgePredictor()
     preds, trues = [], []

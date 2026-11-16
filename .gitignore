@@ -4,3 +4,6 @@ input/*.csv
 firebase-debug.log
 .gitignore
 Real-Time Edge Forecasting - CNN-GRU Capstone.pdf
+EcoEdge Literature Survey - All 60 Studies Condensed.csv
+EcoEdge Literature Survey - All 60 Studies.csv
+literature_survey.csv

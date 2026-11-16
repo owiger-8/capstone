@@ -30,7 +30,9 @@ def main():
 
     df = pd.read_csv(args.csv, usecols=[args.target], nrows=args.rows)
     df[args.target] = df[args.target].ffill().bfill().fillna(0.0)
-    X, y, mn, mx = make_sequences(df[args.target], 60)
+    series = df[args.target].astype(np.float32).values
+    series = np.diff(series, prepend=series[0])
+    X, y, mn, mx = make_sequences(series, 60)
 
     split = int(0.8 * len(X))
     Xtr, Xte = X[:split], X[split:]

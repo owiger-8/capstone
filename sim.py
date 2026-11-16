@@ -77,6 +77,7 @@ class DataStream:
         self.column = column
         df = pd.read_csv(csv_path, usecols=[column])
         series = df[column].ffill().bfill().fillna(0.0).values.astype(np.float32)
+        series = np.diff(series, prepend=series[0])
         start = self._first_significant(series)
         self.idx = start + SEQ_LEN
         self.series = series
