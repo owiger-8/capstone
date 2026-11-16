@@ -6,11 +6,11 @@
 
 | Model | Type | MAE | RMSE | R² |
 |-------|------|-----|------|----|
-| EcoEdge_streaming (ours) | Adaptive (k-NN buffer) | 62.5487 | 62.9177 | -0.5142 |
-| ELM_static (Yang) | Static (frozen) | 2451.9709 | 2452.5017 | -2299.6702 |
-| CNN-BiGRU+Att_static (Ullah) | Static (frozen) | 2456.4069 | 2456.9390 | -2308.0030 |
-| BiLSTM_static (Bohara) | Static (frozen) | 2456.5338 | 2457.0658 | -2308.2413 |
-| CNN-GRU_static (Hasanat) | Static (frozen) | 2456.5338 | 2457.0658 | -2308.2413 |
-| LSTM_static (baseline) | Static (frozen) | 2456.5338 | 2457.0658 | -2308.2413 |
+| EcoEdge_streaming (ours) | Adaptive (k-NN buffer) | 60.3973 | 74.8898 | 0.9717 |
+| ELM_static (Yang) | Static (frozen) | 600.7502 | 747.3726 | -1.8162 |
+| CNN-BiGRU+Att_static (Ullah) | Static (frozen) | 601.4990 | 748.3949 | -1.8239 |
+| BiLSTM_static (Bohara) | Static (frozen) | 601.5856 | 748.4968 | -1.8246 |
+| CNN-GRU_static (Hasanat) | Static (frozen) | 601.5856 | 748.4968 | -1.8246 |
+| LSTM_static (baseline) | Static (frozen) | 601.5856 | 748.4968 | -1.8246 |
 
-**Evaluation:** Streaming forward from index 500000 over 20000 steps
+**Evaluation:** Streaming forward from index 200000 over 200000 steps
