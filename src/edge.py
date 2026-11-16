@@ -30,9 +30,9 @@ class EdgePredictor:
         base_pred = float(base_pred[0, 0])
         latent = latent[0].astype(np.float32)
         if self.count >= 10:
-            labels, _ = self.index.knn_query(latent.reshape(1, -1), k=5)
+            labels, _ = self.index.knn_query(latent.reshape(1, -1), k=10)
             mem_pred = float(np.mean([self.values[i] for i in labels[0]]))
-            final_scaled = 0.6 * base_pred + 0.4 * mem_pred
+            final_scaled = 0.1 * base_pred + 0.9 * mem_pred
         else:
             final_scaled = base_pred
         self.index.add_items(latent.reshape(1, -1), [self.count])

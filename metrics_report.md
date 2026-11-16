@@ -7,6 +7,7 @@
 - Validation R2: -inf (zero variance in validation split)
 
 ## Testing / Evaluation
-- MAE: 100.4075
-- RMSE: 153.2663
-- R2: 0.7516
+- MAE: 3.4832
+- RMSE: 4.1071
+- MAPE: 0.34%
+- R2: 0.9997

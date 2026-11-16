@@ -14,4 +14,4 @@ on the same train/test split (80/20), sequence length = 60.
 | LSTM | baseline | 262.0127 | 303.0580 | -0.1913 |
 | BiLSTM | Bohara2023 | 265.1929 | 304.2610 | -0.2008 |
 
-**Note:** EcoEdge uses the frozen ONNX CNN-GRU extractor + k-NN memory buffer as described in project_readme.md. Our model's reported metrics from metrics_report.md: MAE=100.41, RMSE=153.27, R²=0.7516.
+**Note:** EcoEdge uses the frozen ONNX CNN-GRU extractor + k-NN memory buffer as described in project_readme.md. Our model's reported metrics from metrics_report.md: MAE=3.48, RMSE=4.11, R²=0.9997.
