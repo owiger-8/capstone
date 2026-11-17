@@ -1,4 +1,5 @@
 import os
+import json
 import numpy as np
 import onnxruntime as ort
 import hnswlib
@@ -6,7 +7,8 @@ import hnswlib
 
 class EdgePredictor:
     def __init__(self, onnx_path="cnn_gru_base.onnx", scaler_path="scaler.npy",
-                 latent_dim=32, memory_path_prefix=None):
+                 latent_dim=32, memory_path_prefix=None,
+                 blend_weight=None, k=None):
         self.session = ort.InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
         self.input_name = self.session.get_inputs()[0].name
         self.mn, self.mx = np.load(scaler_path)
@@ -15,6 +17,18 @@ class EdgePredictor:
         self.values = []
         self.count = 0
         self.memory_path_prefix = memory_path_prefix
+
+        # Load tuned params if available, else use defaults
+        bp_path = os.path.join(os.path.dirname(onnx_path) or ".", "best_params.json")
+        if os.path.exists(bp_path):
+            with open(bp_path, "r") as f:
+                bp = json.load(f)
+            self.blend_weight = blend_weight if blend_weight is not None else bp.get("blend", 0.4)
+            self.k = k if k is not None else bp.get("k", 10)
+        else:
+            self.blend_weight = blend_weight if blend_weight is not None else 0.4
+            self.k = k if k is not None else 10
+
         if memory_path_prefix:
             self.load_memory(memory_path_prefix)
 
@@ -30,9 +44,9 @@ class EdgePredictor:
         base_pred = float(base_pred[0, 0])
         latent = latent[0].astype(np.float32)
         if self.count >= 10:
-            labels, _ = self.index.knn_query(latent.reshape(1, -1), k=10)
+            labels, _ = self.index.knn_query(latent.reshape(1, -1), k=self.k)
             mem_pred = float(np.mean([self.values[i] for i in labels[0]]))
-            final_scaled = 0.1 * base_pred + 0.9 * mem_pred
+            final_scaled = (1.0 - self.blend_weight) * base_pred + self.blend_weight * mem_pred
         else:
             final_scaled = base_pred
         self.index.add_items(latent.reshape(1, -1), [self.count])
